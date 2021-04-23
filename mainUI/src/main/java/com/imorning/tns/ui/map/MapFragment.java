@@ -80,7 +80,7 @@ public class MapFragment extends Fragment implements AMapLocationListener, Locat
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.menu_direct_to) {
-            // TODO: 2021-04-23 添加导航 
+            // TODO: 2021-04-23 添加导航
             return true;
         }
         return super.onOptionsItemSelected(item);
