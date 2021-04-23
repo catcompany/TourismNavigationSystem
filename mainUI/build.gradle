@@ -46,6 +46,8 @@ dependencies {
 
     //定位功能
     implementation 'com.amap.api:location:5.2.0'
+    //搜索功能
+    implementation 'com.amap.api:search:latest.integration'
     //导航功能
     implementation 'com.amap.api:navi-3dmap:7.8.0_3dmap7.8.0'
     testImplementation 'junit:junit:4.13.2'

@@ -1,8 +1,11 @@
 package com.imorning.tns.ui.map;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,6 +13,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,14 +32,32 @@ import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.navi.model.search.LatLonPoint;
+import com.amap.api.navi.model.search.Tip;
+import com.amap.api.services.core.PoiItem;
+import com.amap.api.services.core.SuggestionCity;
+import com.amap.api.services.poisearch.PoiResult;
+import com.amap.api.services.poisearch.PoiSearch;
 import com.imorning.tns.R;
+import com.imorning.tns.activity.InputTipsActivity;
+import com.imorning.tns.overlay.PoiOverlay;
+import com.imorning.tns.utils.Constants;
 import com.imorning.tns.utils.MapInfoUtils;
+import com.imorning.tns.utils.ToastUtil;
 
-public class MapFragment extends Fragment implements AMapLocationListener, LocationSource {
+import java.util.ArrayList;
+import java.util.List;
 
+public class MapFragment extends Fragment implements AMap.OnMarkerClickListener, AMap.InfoWindowAdapter,
+        PoiSearch.OnPoiSearchListener, View.OnClickListener,
+        AMapLocationListener, LocationSource {
+
+    public static final int REQUEST_CODE = 100;
+    public static final int RESULT_CODE_INPUTTIPS = 101;
+    public static final int RESULT_CODE_KEYWORDS = 102;
     private static final String TAG = "MapFragment";
-    //高德地图相关API
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     //声明AMapLocationClientOption对象
@@ -46,10 +69,21 @@ public class MapFragment extends Fragment implements AMapLocationListener, Locat
 
     private OnLocationChangedListener mListener;
     private MapView mapView;
-    private AMap aMap;
+    private AMap mAMap;
 
     private MapViewModel mViewModel;
     private View rootView;
+
+    //搜索相关
+    private String mKeyWords = "";// 要输入的poi搜索关键字
+    private ProgressDialog progDialog = null;// 搜索时进度条
+    private PoiResult poiResult; // poi返回的结果
+    private int currentPage = 1;
+    private PoiSearch.Query query;// Poi查询条件类
+    private PoiSearch poiSearch;// POI搜索
+    private TextView mKeywordsTextView;
+    private Marker mPoiMarker;
+    private ImageView mCleanKeyWords;
 
     public static MapFragment newInstance() {
         return new MapFragment();
@@ -66,9 +100,220 @@ public class MapFragment extends Fragment implements AMapLocationListener, Locat
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(MapViewModel.class);
         initMapSDK();
         initMapView(savedInstanceState);
+        init();
+
+    }
+
+    private void init() {
+        mKeyWords = "";
+        mViewModel = new ViewModelProvider(this).get(MapViewModel.class);
+        mCleanKeyWords = (ImageView) rootView.findViewById(R.id.clean_keywords);
+        mCleanKeyWords.setOnClickListener(this);
+        mKeywordsTextView = (TextView) rootView.findViewById(R.id.main_keywords);
+        mKeywordsTextView.setOnClickListener(this);
+        mAMap.setOnMarkerClickListener(this);// 添加点击marker监听事件
+        mAMap.setInfoWindowAdapter(this);// 添加显示infowindow监听事件
+        mAMap.getUiSettings().setRotateGesturesEnabled(false);
+    }
+
+    /**
+     * 显示进度框
+     */
+    private void showProgressDialog() {
+        progDialog = new ProgressDialog(getContext());
+        progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progDialog.setIndeterminate(false);
+        progDialog.setCancelable(false);
+        progDialog.setMessage("正在搜索:\n" + mKeyWords);
+        progDialog.show();
+    }
+
+    /**
+     * 隐藏进度框
+     */
+    private void dissmissProgressDialog() {
+        if (progDialog != null) {
+            progDialog.dismiss();
+        }
+    }
+
+    /**
+     * 开始进行poi搜索
+     */
+    protected void doSearchQuery(String keywords) {
+        showProgressDialog();// 显示进度框
+        currentPage = 1;
+        // 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
+        query = new PoiSearch.Query(keywords, "", Constants.DEFAULT_CITY);
+        // 设置每页最多返回多少条poiitem
+        query.setPageSize(10);
+        // 设置查第一页
+        query.setPageNum(currentPage);
+
+        poiSearch = new PoiSearch(getContext(), query);
+        poiSearch.setOnPoiSearchListener(this);
+        poiSearch.searchPOIAsyn();
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        marker.showInfoWindow();
+        return false;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoWindow(final Marker marker) {
+        @SuppressLint("InflateParams")
+        View view = getLayoutInflater().inflate(R.layout.poikeywordsearch_uri,
+                null);
+        TextView title = (TextView) view.findViewById(R.id.title);
+        title.setText(marker.getTitle());
+
+        TextView snippet = (TextView) view.findViewById(R.id.snippet);
+        snippet.setText(marker.getSnippet());
+        return view;
+    }
+
+    /**
+     * poi没有搜索到数据，返回一些推荐城市的信息
+     */
+    private void showSuggestCity(List<SuggestionCity> cities) {
+        StringBuilder infomation = new StringBuilder("推荐城市\n");
+        for (int i = 0; i < cities.size(); i++) {
+            infomation.append("城市名称:").append(cities.get(i).getCityName()).append("城市区号:").append(cities.get(i).getCityCode()).append("城市编码:").append(cities.get(i).getAdCode()).append("\n");
+        }
+        ToastUtil.show(getContext(), infomation.toString());
+
+    }
+
+
+    /**
+     * POI信息查询回调方法
+     */
+    @Override
+    public void onPoiSearched(PoiResult result, int rCode) {
+        dissmissProgressDialog();
+        if (rCode == 1000) {
+            if (result != null && result.getQuery() != null) {
+                // 搜索poi的结果
+                if (result.getQuery().equals(query)) {
+                    // 是否是同一条
+                    poiResult = result;
+                    // 取得搜索到的poiitems有多少页
+                    ArrayList<PoiItem> poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
+                    List<SuggestionCity> suggestionCities = poiResult
+                            .getSearchSuggestionCitys();// 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
+
+                    if (poiItems != null && poiItems.size() > 0) {
+                        mAMap.clear();// 清理之前的图标
+                        PoiOverlay poiOverlay = new PoiOverlay(mAMap, poiItems);
+                        poiOverlay.removeFromMap();
+                        poiOverlay.addToMap();
+                        poiOverlay.zoomToSpan();
+                    } else if (suggestionCities != null
+                            && suggestionCities.size() > 0) {
+                        showSuggestCity(suggestionCities);
+                    } else {
+                        ToastUtil.show(getContext(),R.string.no_result);
+                    }
+                }
+            } else {
+                ToastUtil.show(getContext(), R.string.no_result);
+            }
+        } else {
+            ToastUtil.showerror(getContext(), rCode);
+        }
+
+    }
+
+    @Override
+    public void onPoiItemSearched(com.amap.api.services.core.PoiItem poiItem, int rCode) {
+
+    }
+
+
+    /**
+     * 输入提示activity选择结果后的处理逻辑
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_CODE_INPUTTIPS && data
+                != null) {
+            mAMap.clear();
+            Tip tip = data.getParcelableExtra(Constants.EXTRA_TIP);
+            if (tip.getPoiID() == null || tip.getPoiID().equals("")) {
+                doSearchQuery(tip.getName());
+            } else {
+                addTipMarker(tip);
+            }
+            mKeywordsTextView.setText(tip.getName());
+            if (!tip.getName().equals("")) {
+                mCleanKeyWords.setVisibility(View.VISIBLE);
+            }
+        } else if (resultCode == RESULT_CODE_KEYWORDS && data != null) {
+            mAMap.clear();
+            String keywords = data.getStringExtra(Constants.KEY_WORDS_NAME);
+            if (keywords != null && !keywords.equals("")) {
+                doSearchQuery(keywords);
+            }
+            mKeywordsTextView.setText(keywords);
+            if (!TextUtils.isEmpty(keywords)) {
+                mCleanKeyWords.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    /**
+     * 用marker展示输入提示list选中数据
+     *
+     * @param tip
+     */
+    private void addTipMarker(Tip tip) {
+        if (tip == null) {
+            return;
+        }
+        mPoiMarker = mAMap.addMarker(new MarkerOptions());
+        LatLonPoint point = tip.getPoint();
+        if (point != null) {
+            LatLng markerPosition = new LatLng(point.getLatitude(), point.getLongitude());
+            mPoiMarker.setPosition(markerPosition);
+            mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerPosition, 17));
+        }
+        mPoiMarker.setTitle(tip.getName());
+        mPoiMarker.setSnippet(tip.getAddress());
+    }
+
+    /**
+     * 点击事件回调方法
+     */
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.main_keywords:
+                Intent intent = new Intent(getActivity(), InputTipsActivity.class);
+                startActivityForResult(intent, REQUEST_CODE);
+                break;
+            case R.id.clean_keywords:
+                mKeywordsTextView.setText("");
+                mAMap.clear();
+                mCleanKeyWords.setVisibility(View.GONE);
+            default:
+                break;
+        }
     }
 
     @Override
@@ -126,12 +371,12 @@ public class MapFragment extends Fragment implements AMapLocationListener, Locat
      */
     private void initMapView(Bundle savedInstanceState) {
         mapView.onCreate(savedInstanceState);// 此方法必须重写
-        aMap = mapView.getMap();
+        mAMap = mapView.getMap();
         // 显示实时交通状况  地图模式可选类型：MAP_TYPE_NORMAL,MAP_TYPE_SATELLITE,MAP_TYPE_NIGHT
-        aMap.setTrafficEnabled(true);
-        aMap.setMapType(AMap.MAP_TYPE_NORMAL);
-        aMap.setLocationSource(this);
-        UiSettings uiSettings = aMap.getUiSettings();
+        mAMap.setTrafficEnabled(true);
+        mAMap.setMapType(AMap.MAP_TYPE_NORMAL);
+        mAMap.setLocationSource(this);
+        UiSettings uiSettings = mAMap.getUiSettings();
         //显示定位按键
         uiSettings.setMyLocationButtonEnabled(true);
         //显示缩放图标
@@ -143,7 +388,7 @@ public class MapFragment extends Fragment implements AMapLocationListener, Locat
         //设置为不可以使用旋转手势
         uiSettings.setRotateGesturesEnabled(false);
         //定位图标可以点击
-        aMap.setMyLocationEnabled(true);
+        mAMap.setMyLocationEnabled(true);
         //location();
     }
 
@@ -159,7 +404,7 @@ public class MapFragment extends Fragment implements AMapLocationListener, Locat
         markerOption.draggable(false);
         markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(),
                 R.mipmap.ic_default_user)));
-        aMap.addMarker(markerOption);
+        mAMap.addMarker(markerOption);
     }
 
     /**
@@ -177,9 +422,9 @@ public class MapFragment extends Fragment implements AMapLocationListener, Locat
                 // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
                 if (isFirstLoc) {
                     //设置缩放级别
-                    aMap.moveCamera(CameraUpdateFactory.zoomTo(17));
+                    mAMap.moveCamera(CameraUpdateFactory.zoomTo(17));
                     //将地图移动到定位点
-                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(
+                    mAMap.moveCamera(CameraUpdateFactory.changeLatLng(
                             new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
                     //点击定位按钮 能够将地图的中心移动到定位点
                     mListener.onLocationChanged(aMapLocation);
@@ -229,7 +474,7 @@ public class MapFragment extends Fragment implements AMapLocationListener, Locat
 
     @Override
     public void onDestroy() {
-        if (aMap != null) aMap.clear();
+        if (mAMap != null) mAMap.clear();
         //停止定位后，本地定位服务并不会被销毁
         mLocationClient.stopLocation();
         //销毁定位客户端，同时销毁本地定位服务。

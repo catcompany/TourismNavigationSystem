@@ -1,13 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.map.MapFragment">
+    android:orientation="vertical">
 
     <com.amap.api.maps.MapView
         android:id="@+id/mapview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/clean_keywords"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:contentDescription="@string/clear_all"
+            android:src="@mipmap/ic_close"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/main_keywords"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toStartOf="@+id/clean_keywords"
+
+            android:clickable="true"
+            android:completionThreshold="1"
+            android:dropDownVerticalOffset="1.0dip"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:hint="@string/search_by_keywords"
+            android:imeOptions="actionDone"
+            android:inputType="text|textAutoComplete"
+            android:maxLength="20"
+            android:paddingStart="10dp"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textSize="16.0sp"
+            app:drawableStartCompat="@mipmap/ic_search"
+            tools:ignore="RtlSymmetry,TextViewEdits" />
+
+    </RelativeLayout>
+</RelativeLayout>

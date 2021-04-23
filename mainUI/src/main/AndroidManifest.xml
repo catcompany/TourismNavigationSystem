@@ -39,6 +39,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activity.InputTipsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.TourismNavigationSystem.NoActionBar" />
+
         <service
             android:name="com.tencent.smtt.export.external.DexClassLoaderProviderService"
             android:label="dexopt"
