@@ -1,0 +1,2 @@
+include ':mainUI'
+rootProject.name = "TourismNavigationSystem"

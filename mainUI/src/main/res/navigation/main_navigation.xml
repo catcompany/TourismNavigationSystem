@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/nav_map">
+
+    <fragment
+        android:id="@+id/nav_map"
+        android:name="com.imorning.tns.ui.map.MapFragment"
+        android:label="@string/menu_map"
+        tools:layout="@layout/map_fragment" />
+
+    <fragment
+        android:id="@+id/nav_bbs"
+        android:name="com.imorning.tns.ui.bbs.BBSFragment"
+        android:label="@string/menu_bbs"
+        tools:layout="@layout/bbs_fragment" />
+
+
+</navigation>

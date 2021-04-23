@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">旅游导航系统</string>
+    <string name="navigation_drawer_open">打开导航页</string>
+    <string name="navigation_drawer_close">关闭导航页</string>
+    <string name="nav_header_title">用户名</string>
+    <string name="nav_header_subtitle">签名</string>
+    <string name="nav_header_desc">用户头像</string>
+
+    <string name="menu_bbs">论坛</string>
+    <string name="menu_map">地图</string>
+    <string name="direct_to">导航</string>
+</resources>
