@@ -6,13 +6,17 @@
     <string name="nav_header_subtitle">签名</string>
     <string name="nav_header_desc">用户头像</string>
 
-    <string name="no_result">对不起，没有搜索到相关数据！</string>
 
     <string name="menu_bbs">论坛</string>
     <string name="menu_map">地图</string>
-    <string name="direct_to">导航</string>
+    <string name="menu_sense">全国5A级风景区</string>
+
+
     <string name="clear_all">清空</string>
-    <string name="search_by_keywords">关键字搜索</string>
-    <string name="pls_input_keywords">请输入关键字</string>
+    <string name="search_by_keywords">地点搜索</string>
+    <string name="pls_input_keywords">请输入地名</string>
     <string name="back">返回</string>
+    <string name="go_here">去这儿</string>
+    <string name="no_result">对不起，没有搜索到相关数据！</string>
+    <string name="my_location">我在这</string>
 </resources>

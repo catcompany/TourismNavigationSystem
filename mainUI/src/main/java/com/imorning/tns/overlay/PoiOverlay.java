@@ -24,7 +24,7 @@ public class PoiOverlay {
      * 通过此构造函数创建Poi图层。
      *
      * @param amap 地图对象。
-     * @param pois 要在地图上添加的poi。列表中的poi对象详见搜索服务模块的基础核心包（com.amap.api.services.core）中的类<strong> <a href="../../../../../../Search/com/amap/api/services/core/PoiItem.html" title="com.amap.api.services.core中的类">PoiItem</a></strong>。
+     * @param pois 要在地图上添加的poi。列表中的poi对象详见搜索服务模块的基础核心包（com.amap.api.services.core）中的类<strong> <a href="../../../../../../Search/com/amap/api/services/core/PoiItem.html" poi_keyword_uri_title="com.amap.api.services.core中的类">PoiItem</a></strong>。
      * @since V2.1.0
      */
     public PoiOverlay(AMap amap, List<PoiItem> pois) {
@@ -145,7 +145,7 @@ public class PoiOverlay {
      * 返回第index的poi的信息。
      *
      * @param index 第几个poi。
-     * @return poi的信息。poi对象详见搜索服务模块的基础核心包（com.amap.api.services.core）中的类 <strong><a href="../../../../../../Search/com/amap/api/services/core/PoiItem.html" title="com.amap.api.services.core中的类">PoiItem</a></strong>。
+     * @return poi的信息。poi对象详见搜索服务模块的基础核心包（com.amap.api.services.core）中的类 <strong><a href="../../../../../../Search/com/amap/api/services/core/PoiItem.html" poi_keyword_uri_title="com.amap.api.services.core中的类">PoiItem</a></strong>。
      */
     public PoiItem getPoiItem(int index) {
         if (index < 0 || index >= mPois.size()) {

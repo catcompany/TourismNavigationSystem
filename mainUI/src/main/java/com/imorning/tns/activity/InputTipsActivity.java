@@ -2,10 +2,11 @@ package com.imorning.tns.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,27 +24,29 @@ import com.imorning.tns.utils.ToastUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InputTipsActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, Inputtips.InputtipsListener, OnItemClickListener, View.OnClickListener {
-    private ListView mInputListView;
+public class InputTipsActivity extends AppCompatActivity implements
+        SearchView.OnQueryTextListener, Inputtips.InputtipsListener,
+        OnItemClickListener, View.OnClickListener {
+    private static final String TAG = "InputTipsActivity";
     private List<Tip> mCurrentTipList;
     private InputTipsAdapter mIntipAdapter;
-
-    public static boolean IsEmptyOrNullString(String s) {
-        return (s == null) || (s.trim().length() == 0);
-    }
+    private ListView mInputListView;
+    private String currentCity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input_tips);
         initSearchView();
-        ((ListView) findViewById(R.id.input_tip_list)).setOnItemClickListener(this);
-        ((ImageView) findViewById(R.id.input_search_back)).setOnClickListener(this);
+        mInputListView = findViewById(R.id.input_tip_list);
+        mInputListView.setOnItemClickListener(this);
+        findViewById(R.id.input_search_back).setOnClickListener(this);
+        currentCity = getIntent().getExtras().getString(MapFragment.CURRENT_CITY);
     }
 
     private void initSearchView() {
         // 输入搜索关键字
-        SearchView searchView = (SearchView) findViewById(R.id.keyWord);
+        SearchView searchView = findViewById(R.id.keyWord);
         searchView.setOnQueryTextListener(this);
         //设置SearchView默认为展开显示
         searchView.setIconified(false);
@@ -55,20 +58,19 @@ public class InputTipsActivity extends AppCompatActivity implements SearchView.O
     /**
      * 输入提示回调
      *
-     * @param tipList
-     * @param rCode
+     * @param tipList 提示列表
+     * @param rCode   状态码
      */
     @Override
     public void onGetInputtips(List<Tip> tipList, int rCode) {
-        if (rCode == 1000) {// 正确返回
+        // 正确返回
+        if (rCode == 1000) {
             mCurrentTipList = tipList;
             List<String> listString = new ArrayList<>();
             for (int i = 0; i < tipList.size(); i++) {
                 listString.add(tipList.get(i).getName());
             }
-            mIntipAdapter = new InputTipsAdapter(
-                    getApplicationContext(),
-                    mCurrentTipList);
+            mIntipAdapter = new InputTipsAdapter(getApplicationContext(), mCurrentTipList);
             mInputListView.setAdapter(mIntipAdapter);
             mIntipAdapter.notifyDataSetChanged();
         } else {
@@ -91,8 +93,8 @@ public class InputTipsActivity extends AppCompatActivity implements SearchView.O
     /**
      * 按下确认键触发，本例为键盘回车或搜索键
      *
-     * @param query
-     * @return
+     * @param query 查询词
+     * @return ...
      */
     @Override
     public boolean onQueryTextSubmit(String query) {
@@ -106,13 +108,14 @@ public class InputTipsActivity extends AppCompatActivity implements SearchView.O
     /**
      * 输入字符变化时触发
      *
-     * @param newText
-     * @return
+     * @param newText 输入的新词
+     * @return ...
      */
     @Override
     public boolean onQueryTextChange(String newText) {
-        if (!IsEmptyOrNullString(newText)) {
-            InputtipsQuery inputquery = new InputtipsQuery(newText, Constants.DEFAULT_CITY);
+        if (!TextUtils.isEmpty(newText)) {
+            Log.d(TAG, "onQueryTextChange: " + newText);
+            InputtipsQuery inputquery = new InputtipsQuery(newText, currentCity);
             Inputtips inputTips = new Inputtips(InputTipsActivity.this.getApplicationContext(), inputquery);
             inputTips.setInputtipsListener(this);
             inputTips.requestInputtipsAsyn();

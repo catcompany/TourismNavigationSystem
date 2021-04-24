@@ -1,10 +1,8 @@
 package com.imorning.tns;
 
 import android.app.Application;
-import android.util.Log;
 
 import com.hjq.permissions.XXPermissions;
-import com.imorning.tns.utils.ApkUtils;
 import com.tencent.smtt.export.external.TbsCoreSettings;
 import com.tencent.smtt.sdk.QbSdk;
 
@@ -18,8 +16,13 @@ public class App extends Application {
         super.onCreate();
         // 当前项目是否已经适配了分区存储的特性
         XXPermissions.setScopedStorage(true);
-        initX5SDK();
-        Log.e(TAG, ApkUtils.getCertificateSHA1Fingerprint(this));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                initX5SDK();
+            }
+        }).start();
+        //Log.e(TAG, ApkUtils.getCertificateSHA1Fingerprint(this));
     }
 
     /**

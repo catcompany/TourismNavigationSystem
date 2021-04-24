@@ -49,13 +49,13 @@ public class X5WebView extends WebView {
         webSetting.setJavaScriptCanOpenWindowsAutomatically(true);
         webSetting.setAllowFileAccess(true);
         webSetting.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
-        webSetting.setSupportZoom(true);
+        webSetting.setSupportZoom(false);
         webSetting.setBuiltInZoomControls(true);
         webSetting.setUseWideViewPort(true);
         webSetting.setSupportMultipleWindows(true);
         // webSetting.setLoadWithOverviewMode(true);
         webSetting.setAppCacheEnabled(true);
-        // webSetting.setDatabaseEnabled(true);
+        webSetting.setDatabaseEnabled(true);
         webSetting.setDomStorageEnabled(true);
         webSetting.setGeolocationEnabled(true);
         webSetting.setAppCacheMaxSize(Long.MAX_VALUE);
@@ -66,25 +66,6 @@ public class X5WebView extends WebView {
 
         // this.getSettingsExtension().setPageCacheCapacity(IX5WebSettings.DEFAULT_CACHE_CAPACITY);//extension
         // settings 的设计
-    }
-
-    @Override
-    protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
-        boolean ret = super.drawChild(canvas, child, drawingTime);
-        if (BuildConfig.DEBUG) {
-            canvas.save();
-            Paint paint = new Paint();
-            paint.setColor(0x7fff0000);
-            paint.setTextSize(24.f);
-            paint.setAntiAlias(true);
-            if (getX5WebViewExtension() != null) {
-                canvas.drawText("正在使用X5内核:" + QbSdk.getTbsVersion(this.getContext()), 10, 50, paint);
-            } else {
-                canvas.drawText("正在使用系统内核", 10, 50, paint);
-            }
-            canvas.restore();
-        }
-        return ret;
     }
 
 }

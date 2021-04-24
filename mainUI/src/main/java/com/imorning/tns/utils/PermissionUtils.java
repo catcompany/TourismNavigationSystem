@@ -11,17 +11,16 @@ import com.hjq.permissions.XXPermissions;
 import java.util.List;
 
 /**
- * 申请权限
+ * 权限处理
  */
 public class PermissionUtils {
-    private final AppCompatActivity appCompatActivity;
-
     public final static String[] permissions = new String[]{
             Permission.WRITE_EXTERNAL_STORAGE,
             Permission.READ_PHONE_STATE,
             Permission.ACCESS_COARSE_LOCATION,
             Permission.ACCESS_FINE_LOCATION
     };
+    private final AppCompatActivity appCompatActivity;
 
     public PermissionUtils(AppCompatActivity activity) {
         this.appCompatActivity = activity;

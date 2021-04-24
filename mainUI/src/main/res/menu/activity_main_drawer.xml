@@ -12,6 +12,10 @@
             android:id="@+id/nav_bbs"
             android:icon="@mipmap/ic_menu_bbs"
             android:title="@string/menu_bbs" />
+        <item
+            android:id="@+id/nav_scense"
+            android:icon="@mipmap/ic_menu_sense"
+            android:title="@string/menu_sense" />
 
 
     </group>

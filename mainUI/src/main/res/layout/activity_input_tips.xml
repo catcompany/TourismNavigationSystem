@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/grey"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:padding="5dp"
     tools:context=".activity.InputTipsActivity">
@@ -26,7 +27,7 @@
             android:background="@drawable/back"
             android:contentDescription="@string/back"
             android:scaleType="center"
-            android:src="@mipmap/ic_arrow_back" />
+            android:src="@mipmap/ic_input_back" />
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/keyWord"

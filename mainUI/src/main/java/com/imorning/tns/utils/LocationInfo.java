@@ -1,30 +1,37 @@
 package com.imorning.tns.utils;
 
+import android.text.TextUtils;
+
 import com.amap.api.location.AMapLocation;
 
 import org.jetbrains.annotations.NotNull;
 
-public class MapInfoUtils {
-    private final AMapLocation amapLocation;
+public class LocationInfo {
     private final double latitudel;
     private final double longitude;
-    private final float accuracy;
-    private final String address;
-    private final String country;
-    private final String province;
     private final String city;
-    private final String district;
-    private final String street;
-    private final String streetNum;
-    private final String cityCode;
-    private final String aoiName;
-    private final String buildingId;
-    private final String floor;
-    private final int locationType;
-    private final int gpsAccuracyStatus;
+    private AMapLocation amapLocation;
+    private float accuracy;
+    private String address;
+    private String country;
+    private String province;
+    private String district;
+    private String street;
+    private String streetNum;
+    private String cityCode;
+    private String aoiName;
+    private String buildingId;
+    private String floor;
+    private int locationType;
+    private int gpsAccuracyStatus;
     private String adCode;
 
-    public MapInfoUtils(AMapLocation aMapLocation) {
+    /**
+     * 记录位置信息
+     *
+     * @param aMapLocation AMapLocation对象
+     */
+    public LocationInfo(AMapLocation aMapLocation) {
         if (aMapLocation == null) {
             throw new NullPointerException("AMapLocation should not be a null object!");
         }
@@ -45,6 +52,21 @@ public class MapInfoUtils {
         floor = amapLocation.getFloor();
         locationType = amapLocation.getLocationType();
         gpsAccuracyStatus = amapLocation.getGpsAccuracyStatus();
+        adCode = amapLocation.getAdCode();
+    }
+
+    /**
+     * 记录位置信息
+     *
+     * @param latitudel 经度
+     * @param longitude 维度
+     * @param city      城市
+     */
+    public LocationInfo(double latitudel, double longitude, String city) {
+        if (city == null) city = "";
+        this.latitudel = latitudel;
+        this.longitude = longitude;
+        this.city = city;
     }
 
     public AMapLocation getAmapLocation() {
@@ -57,6 +79,8 @@ public class MapInfoUtils {
      * @return 维度
      */
     public double getLatitudel() {
+        if (latitudel == 0)
+            return Constants.XIAN.latitude;
         return latitudel;
     }
 
@@ -66,6 +90,8 @@ public class MapInfoUtils {
      * @return 经度
      */
     public double getLongitude() {
+        if (longitude == 0)
+            return Constants.XIAN.longitude;
         return longitude;
     }
 
@@ -111,6 +137,8 @@ public class MapInfoUtils {
      * @return 城市
      */
     public String getCity() {
+        if (TextUtils.isEmpty(city))
+            return Constants.DEFAULT_CITY;
         return city;
     }
 
@@ -208,7 +236,7 @@ public class MapInfoUtils {
     @NotNull
     @Override
     public String toString() {
-        return "MapInfoUtils{" +
+        return "LocationInfo{" +
                 "  latitudel=" + latitudel +
                 ", longitude=" + longitude +
                 ", accuracy=" + accuracy +

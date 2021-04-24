@@ -11,11 +11,16 @@
         android:label="@string/menu_map"
         tools:layout="@layout/map_fragment" />
 
+
     <fragment
         android:id="@+id/nav_bbs"
         android:name="com.imorning.tns.ui.bbs.BBSFragment"
         android:label="@string/menu_bbs"
         tools:layout="@layout/bbs_fragment" />
 
-
+    <fragment
+        android:id="@+id/nav_scense"
+        android:name="com.imorning.tns.ui.scense.ScenicSpotFragment"
+        android:label="@string/menu_sense"
+        tools:layout="@layout/bbs_fragment" />
 </navigation>
