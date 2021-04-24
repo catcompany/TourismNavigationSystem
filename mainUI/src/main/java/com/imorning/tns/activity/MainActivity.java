@@ -68,18 +68,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        new CircleDialog.Builder()
-                .setCanceledOnTouchOutside(false)
-                .setCancelable(false)
-                .setTitle("提示")
-                .setText("确定退出？")
-                .setNegative("取消", null)
-                .setPositive("确定", v ->
-                        super.onBackPressed())
-                .configPositive(params -> params.backgroundColorPress = Color.BLACK)
-                .show(getSupportFragmentManager());
-
-    }
 }

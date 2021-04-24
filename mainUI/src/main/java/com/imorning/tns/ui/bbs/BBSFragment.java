@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.imorning.tns.R;
 import com.imorning.tns.webview.X5WebView;
+import com.mylhyl.circledialog.CircleDialog;
 
 public class BBSFragment extends Fragment {
     private static final String TAG = "BBSFragment";
@@ -62,6 +63,18 @@ public class BBSFragment extends Fragment {
                 callback.setEnabled(false);
             }
         }
-        requireActivity().getOnBackPressedDispatcher().onBackPressed();
+        new CircleDialog.Builder()
+                .setCanceledOnTouchOutside(false)
+                .setCancelable(false)
+                .setTitle("提示")
+                .setText("确定退出？")
+                .setNegative("取消", null)
+                .setPositive("确定", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        requireActivity().getOnBackPressedDispatcher().onBackPressed();
+                    }
+                })
+                .show(requireActivity().getSupportFragmentManager());
     }
 }
