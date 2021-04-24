@@ -1,9 +1,9 @@
 package com.imorning.tns.activity;
 
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -20,10 +20,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.hjq.permissions.XXPermissions;
 import com.imorning.tns.R;
 import com.imorning.tns.utils.PermissionUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import com.mylhyl.circledialog.CircleDialog;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -71,5 +68,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        new CircleDialog.Builder()
+                .setCanceledOnTouchOutside(false)
+                .setCancelable(false)
+                .setTitle("提示")
+                .setText("确定退出？")
+                .setNegative("取消", null)
+                .setPositive("确定", v ->
+                        super.onBackPressed())
+                .configPositive(params -> params.backgroundColorPress = Color.BLACK)
+                .show(getSupportFragmentManager());
 
+    }
 }

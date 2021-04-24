@@ -4,7 +4,7 @@ import com.amap.api.maps.model.LatLng;
 
 public class Constants {
 
-	public static String DEFAULT_CITY = "北京";
+	public static String DEFAULT_CITY = "西安";
 	public static final String EXTRA_TIP = "ExtraTip";
 	public static final String KEY_WORDS_NAME = "KeyWord";
 

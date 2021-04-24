@@ -68,25 +68,31 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     //声明AMapLocationClientOption对象
     public AMapLocationClientOption mLocationOption = null;
     //保存位置信息
-    private LocationInfo locationInfo = null;
+    private LocationInfo currentLocationInfo = null;
     //标识，用于判断是否只显示一次定位信息和用户重新定位
     private boolean isFirstLoc = true;
-
-    private OnLocationChangedListener mListener;
+    //位置监听，当定位发生改变的时候调用
+    private OnLocationChangedListener locationChangedListener;
+    //地图视图
     private MapView mapView;
     private AMap mAMap;
 
     private MapViewModel mViewModel;
     private View rootView;
 
-    //搜索相关
-    private String mKeyWords = "";// 要输入的poi搜索关键字
-    private ProgressDialog progDialog = null;// 搜索时进度条
-    private PoiResult poiResult; // poi返回的结果
-    private PoiSearch.Query query;// Poi查询条件类
-    private PoiSearch poiSearch;// POI搜索
+    // 要输入的poi搜索关键字
+    private String mKeyWords = "";
+    // 搜索时进度条
+    private ProgressDialog progDialog = null;
+    // poi返回的结果
+    private PoiResult poiResult;
+    // Poi查询条件类
+    private PoiSearch.Query query;
+    // POI搜索
+    private PoiSearch poiSearch;
     private TextView mKeywordsTextView;
     private ImageView mCleanKeyWords;
+    //目标地点信息
     private LocationInfo targetLocation = null;
 
     public static MapFragment newInstance() {
@@ -118,7 +124,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
         showProgressDialog();
         int currentPage = 1;
         // 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
-        query = new PoiSearch.Query(keywords, "", locationInfo.getCity());
+        query = new PoiSearch.Query(keywords, "", currentLocationInfo.getCity());
         // 设置每页最多返回多少条poiitem
         query.setPageSize(20);
         // 设置查第一页
@@ -301,7 +307,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
         switch (v.getId()) {
             case R.id.main_keywords:
                 Intent intent = new Intent(getActivity(), InputTipsActivity.class);
-                intent.putExtra(CURRENT_CITY, locationInfo.getCity());
+                intent.putExtra(CURRENT_CITY, currentLocationInfo.getCity());
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
             case R.id.clean_keywords:
@@ -311,18 +317,18 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
                 break;
             //点击导航（去这儿）按钮
             case R.id.poi_keyword_uri_go:
-                if (locationInfo == null || targetLocation == null) {
+                if (currentLocationInfo == null || targetLocation == null) {
                     ToastUtil.show(getContext(), "起点或终点信息错误");
                     break;
                 }
-                LatLng startLatLng = new LatLng(locationInfo.getLatitudel(), locationInfo.getLongitude());
+                LatLng startLatLng = new LatLng(currentLocationInfo.getLatitudel(), currentLocationInfo.getLongitude());
                 LatLng endLatLng = new LatLng(targetLocation.getLatitudel(), targetLocation.getLongitude());
                 if (startLatLng.equals(endLatLng)) {
                     ToastUtil.show(getContext(), "起点和终点不能相同！");
                     break;
                 }
                 List<Poi> wayList = null; //必须经过的点
-                AmapNaviParams params = new AmapNaviParams(new Poi(locationInfo.getCity(), startLatLng, ""), wayList,
+                AmapNaviParams params = new AmapNaviParams(new Poi(currentLocationInfo.getCity(), startLatLng, ""), wayList,
                         new Poi("", endLatLng, ""), AmapNaviType.DRIVER);
                 params.setUseInnerVoice(true);
                 AmapNaviPage amapNaviPage = AmapNaviPage.getInstance();
@@ -393,7 +399,8 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
         uiSettings.setRotateGesturesEnabled(false);
         //定位图标可以点击
         mAMap.setMyLocationEnabled(true);
-        //location();
+        //设置默认地点为西安
+        currentLocationInfo = new LocationInfo(Constants.XIAN.latitude, Constants.XIAN.longitude, Constants.DEFAULT_CITY);
     }
 
     /**
@@ -422,7 +429,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
         if (aMapLocation != null) {
             if (aMapLocation.getErrorCode() == 0) {
                 //可在其中解析amapLocation获取相应内容。
-                locationInfo = new LocationInfo(aMapLocation);
+                currentLocationInfo = new LocationInfo(aMapLocation);
                 // 如果不设置标志位，此时再拖动地图时，它会不断将地图移动到当前的位置
                 if (isFirstLoc) {
                     //设置缩放级别
@@ -431,7 +438,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
                     mAMap.moveCamera(CameraUpdateFactory.changeLatLng(
                             new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
                     //点击定位按钮 能够将地图的中心移动到定位点
-                    mListener.onLocationChanged(aMapLocation);
+                    locationChangedListener.onLocationChanged(aMapLocation);
                     //添加图钉
                     addMapMark(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude()));
                     isFirstLoc = false;
@@ -446,12 +453,12 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
 
     @Override
     public void activate(OnLocationChangedListener onLocationChangedListener) {
-        mListener = onLocationChangedListener;
+        locationChangedListener = onLocationChangedListener;
     }
 
     @Override
     public void deactivate() {
-        mListener = null;
+        locationChangedListener = null;
     }
 
     @Override

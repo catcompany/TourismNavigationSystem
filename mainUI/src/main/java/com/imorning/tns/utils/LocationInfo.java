@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class LocationInfo {
     private final double latitudel;
     private final double longitude;
-    private final String city;
+    private String city = null;
     private AMapLocation amapLocation;
     private float accuracy;
     private String address;
@@ -137,7 +137,7 @@ public class LocationInfo {
      * @return 城市
      */
     public String getCity() {
-        if (TextUtils.isEmpty(city))
+        if (TextUtils.isEmpty(city) || city == null)
             return Constants.DEFAULT_CITY;
         return city;
     }

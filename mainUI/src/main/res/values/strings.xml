@@ -19,4 +19,5 @@
     <string name="go_here">去这儿</string>
     <string name="no_result">对不起，没有搜索到相关数据！</string>
     <string name="my_location">我在这</string>
+    <string name="loading">加载中</string>
 </resources>
