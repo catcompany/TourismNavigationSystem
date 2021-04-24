@@ -30,6 +30,7 @@ public class BBSFragment extends Fragment {
         new ViewModelProvider(this).get(BBSViewModel.class);
         View rootView = inflater.inflate(R.layout.bbs_fragment, container, false);
         webView = rootView.findViewById(R.id.webview_bbs);
+
         return rootView;
     }
 

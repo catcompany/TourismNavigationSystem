@@ -1,2 +1,3 @@
+include ':xiuno'
 include ':mainUI'
 rootProject.name = "TourismNavigationSystem"

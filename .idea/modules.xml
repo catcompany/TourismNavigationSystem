@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/TourismNavigationSystem.iml" filepath="$PROJECT_DIR$/.idea/modules/TourismNavigationSystem.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/TourismNavigationSystem.mainUI.iml" filepath="$PROJECT_DIR$/.idea/modules/app/TourismNavigationSystem.mainUI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/xiuno/TourismNavigationSystem.xiuno.iml" filepath="$PROJECT_DIR$/.idea/modules/xiuno/TourismNavigationSystem.xiuno.iml" />
     </modules>
   </component>
 </project>

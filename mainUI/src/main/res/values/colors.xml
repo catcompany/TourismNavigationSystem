@@ -18,4 +18,5 @@
     <color name="drawer_text_color_blue">#FF2D60C6</color>
 
     <color name="navi_status_bar_bg">#4C000000</color>
+    <color name="bbs_header">#343a40</color>
 </resources>

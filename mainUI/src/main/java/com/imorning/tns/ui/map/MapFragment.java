@@ -325,7 +325,9 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
                 AmapNaviParams params = new AmapNaviParams(new Poi(locationInfo.getCity(), startLatLng, ""), wayList,
                         new Poi("", endLatLng, ""), AmapNaviType.DRIVER);
                 params.setUseInnerVoice(true);
-                AmapNaviPage.getInstance().showRouteActivity(getContext(), params, new NaviInfoCallback(getContext()));
+                AmapNaviPage amapNaviPage = AmapNaviPage.getInstance();
+
+                amapNaviPage.showRouteActivity(getContext(), params, new NaviInfoCallback(getContext()));
                 break;
             default:
                 break;
