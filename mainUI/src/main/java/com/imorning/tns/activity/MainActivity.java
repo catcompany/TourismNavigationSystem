@@ -1,11 +1,14 @@
 package com.imorning.tns.activity;
 
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -18,10 +21,15 @@ import com.hjq.permissions.XXPermissions;
 import com.imorning.tns.R;
 import com.imorning.tns.utils.PermissionUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private AppBarConfiguration mAppBarConfiguration;
+    private AppCompatImageView iv_header;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,12 +37,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //申请权限
         new PermissionUtils(this).requestAllPermission();
+        //Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        //抽屉布局
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
+        //定义抽屉布局属性
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_map, R.id.nav_scense)
                 .setDrawerLayout(drawer)
                 .build();
@@ -42,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
     }
+
 
     @Override
     public boolean onSupportNavigateUp() {
