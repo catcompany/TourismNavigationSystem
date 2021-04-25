@@ -1,6 +1,7 @@
 package com.imorning.tns.ui.scense;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +31,7 @@ import com.imorning.senseinfohelper.bean.scenedata.SenseInfoContentList;
 import com.imorning.senseinfohelper.bean.scenedata.SenseResBody;
 import com.imorning.senseinfohelper.utils.Constants;
 import com.imorning.tns.R;
+import com.imorning.tns.activity.SenseInfoActivity;
 import com.imorning.tns.ui.map.MapFragment;
 import com.imorning.tns.utils.LocationInfo;
 import com.imorning.tns.utils.NaviInfoCallback;
@@ -39,20 +41,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kotlin.collections.MapsKt;
+
 public class SenseSpotFragment extends MapFragment implements AMapLocationListener, OnClickListener {
     private static final String TAG = "SenseSpotFragment";
     private static final String KEYWORD = "keyword";
     private static final String PROID = "proId";
     private static final String CITYID = "cityId";
     private static final String AREAID = "reaId";
-    private final boolean locateSuccess = false;
     protected Handler mHandler = new Handler();
     private double lat, lng;
     private SenseInfoHelper senseInfoHelper;
     private List<SenseInfoContentList> contents;
     private JSONObject jsonObject;
     private SenseResBody senseResBody;
-
+    private String name;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -98,22 +101,6 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
         }.start();
     }
 
-    @Override
-    public View getInfoWindow(final Marker marker) {
-        goRootView = getLayoutInflater().inflate(R.layout.poikeywordsearch_uri, null);
-        AppCompatTextView title = goRootView.findViewById(R.id.poi_keyword_uri_title);
-        AppCompatTextView snippet = goRootView.findViewById(R.id.poi_keyword_uri_snippet);
-        AppCompatButton go_button = goRootView.findViewById(R.id.poi_keyword_uri_go);
-        AppCompatButton moreinfo_button = goRootView.findViewById(R.id.poi_keyword_more);
-        snippet.setText(marker.getSnippet());
-        title.setText(marker.getTitle());
-        go_button.setOnClickListener(this);
-        moreinfo_button.setOnClickListener(this);
-        moreinfo_button.setVisibility(View.VISIBLE);
-
-        return goRootView;
-    }
-
     /**
      * 添加标记点
      *
@@ -132,6 +119,24 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
         mAMap.addMarker(markerOption);
     }
 
+    @Override
+    public View getInfoWindow(final Marker marker) {
+        goRootView = getLayoutInflater().inflate(R.layout.poikeywordsearch_uri, null);
+        AppCompatTextView title = goRootView.findViewById(R.id.poi_keyword_uri_title);
+        AppCompatTextView snippet = goRootView.findViewById(R.id.poi_keyword_uri_snippet);
+        AppCompatButton go_button = goRootView.findViewById(R.id.poi_keyword_uri_go);
+        AppCompatButton moreinfo_button = goRootView.findViewById(R.id.poi_keyword_more);
+        snippet.setText(marker.getSnippet());
+        title.setText(marker.getTitle());
+        go_button.setOnClickListener(this);
+        moreinfo_button.setOnClickListener(this);
+        moreinfo_button.setVisibility(View.VISIBLE);
+        targetLocation = new LocationInfo(marker.getPosition().latitude, marker.getPosition().longitude, null);
+        name = marker.getTitle();
+        return goRootView;
+    }
+
+
     /**
      * 声明定位回调监听器
      * 可以判断AMapLocation对象不为空，当定位错误码类型为0时定位成功。
@@ -148,7 +153,7 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
                 if (isFirstLoc) {
                     isFirstLoc = false;
                     //设置缩放级别
-                    mAMap.moveCamera(CameraUpdateFactory.zoomTo(8));
+                    mAMap.moveCamera(CameraUpdateFactory.zoomTo(10));
                     //将地图移动到定位点
                     mAMap.moveCamera(CameraUpdateFactory.changeLatLng(
                             new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
@@ -198,7 +203,10 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
                 amapNaviPage.showRouteActivity(getContext(), params, new NaviInfoCallback(getContext()));
                 break;
             case R.id.poi_keyword_more:
-                Log.d(TAG, "onClick: ");
+                Intent intent = new Intent(requireContext(), SenseInfoActivity.class);
+                intent.putExtra(SenseInfoActivity.SCENE_NAME, name);
+                intent.putExtra(SenseInfoActivity.CITY,targetLocation.getCity());
+                startActivity(intent);
                 break;
             default:
                 break;
