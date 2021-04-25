@@ -29,10 +29,7 @@ import com.imorning.senseinfohelper.SenseInfoHelper;
 import com.imorning.senseinfohelper.bean.scenedata.SenseInfoContentList;
 import com.imorning.senseinfohelper.bean.scenedata.SenseResBody;
 import com.imorning.senseinfohelper.utils.Constants;
-import com.imorning.senseinfohelper.utils.HttpUtils;
 import com.imorning.tns.R;
-import com.imorning.tns.bean.AddressToLatLng;
-import com.imorning.tns.bean.Districts;
 import com.imorning.tns.ui.map.MapFragment;
 import com.imorning.tns.utils.LocationInfo;
 import com.imorning.tns.utils.NaviInfoCallback;
@@ -55,8 +52,6 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
     private List<SenseInfoContentList> contents;
     private JSONObject jsonObject;
     private SenseResBody senseResBody;
-
-    private AppCompatButton moreinfo_button;
 
 
     @Override
@@ -109,11 +104,13 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
         AppCompatTextView title = goRootView.findViewById(R.id.poi_keyword_uri_title);
         AppCompatTextView snippet = goRootView.findViewById(R.id.poi_keyword_uri_snippet);
         AppCompatButton go_button = goRootView.findViewById(R.id.poi_keyword_uri_go);
-        moreinfo_button = goRootView.findViewById(R.id.poi_keyword_more);
+        AppCompatButton moreinfo_button = goRootView.findViewById(R.id.poi_keyword_more);
         snippet.setText(marker.getSnippet());
         title.setText(marker.getTitle());
         go_button.setOnClickListener(this);
+        moreinfo_button.setOnClickListener(this);
         moreinfo_button.setVisibility(View.VISIBLE);
+
         return goRootView;
     }
 
@@ -201,7 +198,7 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
                 amapNaviPage.showRouteActivity(getContext(), params, new NaviInfoCallback(getContext()));
                 break;
             case R.id.poi_keyword_more:
-                Log.w(TAG, "onClick: ");
+                Log.d(TAG, "onClick: ");
                 break;
             default:
                 break;
