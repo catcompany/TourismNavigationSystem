@@ -1,9 +1,8 @@
 package com.imorning.tns.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.os.StrictMode;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -20,7 +19,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.hjq.permissions.XXPermissions;
 import com.imorning.tns.R;
 import com.imorning.tns.utils.PermissionUtils;
-import com.mylhyl.circledialog.CircleDialog;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -34,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //申请权限
         new PermissionUtils(this).requestAllPermission();
+        //强制主线程访问网络
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         //Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

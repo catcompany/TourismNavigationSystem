@@ -3,9 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/TourismNavigationSystem.iml" filepath="$PROJECT_DIR$/.idea/modules/TourismNavigationSystem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SenseInfoHelper/TourismNavigationSystem.SenseInfoHelper.iml" filepath="$PROJECT_DIR$/.idea/modules/SenseInfoHelper/TourismNavigationSystem.SenseInfoHelper.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/TourismNavigationSystem.mainUI.iml" filepath="$PROJECT_DIR$/.idea/modules/app/TourismNavigationSystem.mainUI.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/senseinfo/TourismNavigationSystem.senseinfo.iml" filepath="$PROJECT_DIR$/.idea/modules/senseinfo/TourismNavigationSystem.senseinfo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/test/TourismNavigationSystem.test.iml" filepath="$PROJECT_DIR$/.idea/modules/test/TourismNavigationSystem.test.iml" />
     </modules>
   </component>
 </project>

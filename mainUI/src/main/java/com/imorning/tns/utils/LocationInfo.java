@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class LocationInfo {
     private final double latitudel;
     private final double longitude;
-    private String city = null;
+    private String city;
     private AMapLocation amapLocation;
     private float accuracy;
     private String address;
@@ -241,7 +241,7 @@ public class LocationInfo {
                 ", longitude=" + longitude +
                 ", accuracy=" + accuracy +
                 ", address='" + address + '\'' +
-                ", country='" + country + '\'' +
+                ", area='" + country + '\'' +
                 ", province='" + province + '\'' +
                 ", city='" + city + '\'' +
                 ", district='" + district + '\'' +

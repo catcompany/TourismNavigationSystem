@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -67,19 +68,20 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     public AMapLocationClient mLocationClient = null;
     //声明AMapLocationClientOption对象
     public AMapLocationClientOption mLocationOption = null;
+    public RelativeLayout searchLayout;
     //保存位置信息
-    private LocationInfo currentLocationInfo = null;
+    public LocationInfo currentLocationInfo = null;
     //标识，用于判断是否只显示一次定位信息和用户重新定位
-    private boolean isFirstLoc = true;
+    public boolean isFirstLoc = true;
     //位置监听，当定位发生改变的时候调用
-    private OnLocationChangedListener locationChangedListener;
+    public OnLocationChangedListener locationChangedListener;
     //地图视图
-    private MapView mapView;
-    private AMap mAMap;
+    public MapView mapView;
+    public AMap mAMap;
 
+    public View rootView;
+    public View goRootView;
     private MapViewModel mViewModel;
-    private View rootView;
-
     // 要输入的poi搜索关键字
     private String mKeyWords = "";
     // 搜索时进度条
@@ -93,7 +95,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     private TextView mKeywordsTextView;
     private ImageView mCleanKeyWords;
     //目标地点信息
-    private LocationInfo targetLocation = null;
+    protected LocationInfo targetLocation = null;
 
     public static MapFragment newInstance() {
         return new MapFragment();
@@ -102,6 +104,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.map_fragment, container, false);
+        searchLayout = rootView.findViewById(R.id.map_fragment_search_view);
         mapView = rootView.findViewById(R.id.mapview);
         setHasOptionsMenu(true);
         return rootView;
@@ -120,7 +123,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     /**
      * 开始进行poi搜索
      */
-    protected void doSearchQuery(String keywords) {
+    public void doSearchQuery(String keywords) {
         showProgressDialog();
         int currentPage = 1;
         // 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
@@ -155,17 +158,18 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
 
     @Override
     public View getInfoWindow(final Marker marker) {
-        @SuppressLint("InflateParams")
-        View view = getLayoutInflater().inflate(R.layout.poikeywordsearch_uri, null);
-        AppCompatTextView title = view.findViewById(R.id.poi_keyword_uri_title);
-        title.setText(marker.getTitle());
-        AppCompatTextView snippet = view.findViewById(R.id.poi_keyword_uri_snippet);
+        goRootView = getLayoutInflater().inflate(R.layout.poikeywordsearch_uri, null);
+        AppCompatTextView title = goRootView.findViewById(R.id.poi_keyword_uri_title);
+        AppCompatTextView snippet = goRootView.findViewById(R.id.poi_keyword_uri_snippet);
+        AppCompatButton go_button = goRootView.findViewById(R.id.poi_keyword_uri_go);
+        AppCompatButton moreinfo_button = goRootView.findViewById(R.id.poi_keyword_more);
         snippet.setText(marker.getSnippet());
-        AppCompatButton go_button = view.findViewById(R.id.poi_keyword_uri_go);
+        title.setText(marker.getTitle());
         go_button.setOnClickListener(this);
+        moreinfo_button.setOnClickListener(this);
         // TODO: 2021-04-24 修改此处
         targetLocation = new LocationInfo(marker.getPosition().latitude, marker.getPosition().longitude, null);
-        return view;
+        return goRootView;
     }
 
     /**
@@ -236,7 +240,9 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data == null) return;
+        if (data == null) {
+            return;
+        }
         if (resultCode == RESULT_CODE_INPUTTIPS) {
             mAMap.clear();
             Tip tip = data.getParcelableExtra(Constants.EXTRA_TIP);
@@ -267,7 +273,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
      *
      * @param tip 提示
      */
-    private void addTipMarker(Tip tip) {
+    public void addTipMarker(Tip tip) {
         if (tip == null) {
             return;
         }
@@ -278,7 +284,6 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
             mPoiMarker.setPosition(markerPosition);
             mAMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerPosition, 17));
         }
-        Log.d(TAG, "addTipMarker: ");
         mPoiMarker.setTitle(tip.getName());
         mPoiMarker.setSnippet(tip.getAddress());
     }
@@ -317,8 +322,12 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
                 break;
             //点击导航（去这儿）按钮
             case R.id.poi_keyword_uri_go:
-                if (currentLocationInfo == null || targetLocation == null) {
-                    ToastUtil.show(getContext(), "起点或终点信息错误");
+                if (currentLocationInfo == null) {
+                    ToastUtil.show(getContext(), "起点信息错误");
+                    break;
+                }
+                if (targetLocation == null) {
+                    ToastUtil.show(getContext(), "目标地点信息错误");
                     break;
                 }
                 LatLng startLatLng = new LatLng(currentLocationInfo.getLatitudel(), currentLocationInfo.getLongitude());
@@ -332,7 +341,6 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
                         new Poi("", endLatLng, ""), AmapNaviType.DRIVER);
                 params.setUseInnerVoice(true);
                 AmapNaviPage amapNaviPage = AmapNaviPage.getInstance();
-
                 amapNaviPage.showRouteActivity(getContext(), params, new NaviInfoCallback(getContext()));
                 break;
             default:
@@ -343,7 +351,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     /**
      * 初始化地图SDK
      */
-    private void initMapSDK() {
+    public void initMapSDK() {
         //初始化定位
         mLocationClient = new AMapLocationClient(requireContext());
         //设置定位回调监听
@@ -378,7 +386,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
      *
      * @param savedInstanceState 保存的数据
      */
-    private void initMapView(Bundle savedInstanceState) {
+    public void initMapView(Bundle savedInstanceState) {
         mapView.onCreate(savedInstanceState);// 此方法必须重写
         mAMap = mapView.getMap();
         // 显示实时交通状况
@@ -406,7 +414,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     /**
      * 初始化其他杂项
      */
-    private void init() {
+    public void init() {
         mKeyWords = "";
         mViewModel = new ViewModelProvider(this).get(MapViewModel.class);
         mCleanKeyWords = rootView.findViewById(R.id.clean_keywords);
@@ -494,7 +502,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     /**
      * 显示进度框
      */
-    private void showProgressDialog() {
+    public void showProgressDialog() {
         progDialog = new ProgressDialog(getContext());
         progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progDialog.setIndeterminate(false);
@@ -506,7 +514,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     /**
      * 隐藏进度框
      */
-    private void dissmissProgressDialog() {
+    public void dissmissProgressDialog() {
         if (progDialog != null) {
             progDialog.dismiss();
         }

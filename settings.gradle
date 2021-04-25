@@ -1,4 +1,3 @@
-include ':test'
-include ':senseinfo'
+include ':SenseInfoHelper'
 include ':mainUI'
 rootProject.name = "TourismNavigationSystem"

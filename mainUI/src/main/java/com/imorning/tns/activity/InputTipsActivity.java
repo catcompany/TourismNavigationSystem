@@ -3,7 +3,6 @@ package com.imorning.tns.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -53,6 +52,7 @@ public class InputTipsActivity extends AppCompatActivity implements
         searchView.onActionViewExpanded();
         searchView.setIconifiedByDefault(true);
         searchView.setSubmitButtonEnabled(false);
+
     }
 
     /**
@@ -114,7 +114,6 @@ public class InputTipsActivity extends AppCompatActivity implements
     @Override
     public boolean onQueryTextChange(String newText) {
         if (!TextUtils.isEmpty(newText)) {
-            Log.d(TAG, "onQueryTextChange: " + newText);
             InputtipsQuery inputquery = new InputtipsQuery(newText, currentCity);
             Inputtips inputTips = new Inputtips(InputTipsActivity.this.getApplicationContext(), inputquery);
             inputTips.setInputtipsListener(this);

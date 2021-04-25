@@ -9,7 +9,7 @@
 
     <string name="menu_bbs">论坛</string>
     <string name="menu_map">地图</string>
-    <string name="menu_sense">全国5A级风景区</string>
+    <string name="menu_sense">附近景区搜索</string>
 
 
     <string name="clear_all">清空</string>
@@ -20,4 +20,5 @@
     <string name="no_result">对不起，没有搜索到相关数据！</string>
     <string name="my_location">我在这</string>
     <string name="loading">加载中</string>
+    <string name="more_information">详细信息</string>
 </resources>

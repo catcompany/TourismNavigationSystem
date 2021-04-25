@@ -30,4 +30,15 @@
         app:layout_constraintStart_toStartOf="@id/poi_keyword_uri_title"
         app:layout_constraintTop_toBottomOf="@id/poi_keyword_uri_snippet" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/poi_keyword_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:text="@string/more_information"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@id/poi_keyword_uri_go"
+        app:layout_constraintTop_toBottomOf="@id/poi_keyword_uri_snippet" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

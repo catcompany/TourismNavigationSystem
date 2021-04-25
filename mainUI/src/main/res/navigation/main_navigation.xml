@@ -20,7 +20,7 @@
 
     <fragment
         android:id="@+id/nav_scense"
-        android:name="com.imorning.tns.ui.scense.ScenicSpotFragment"
+        android:name="com.imorning.tns.ui.scense.SenseSpotFragment"
         android:label="@string/menu_sense"
         tools:layout="@layout/bbs_fragment" />
 </navigation>

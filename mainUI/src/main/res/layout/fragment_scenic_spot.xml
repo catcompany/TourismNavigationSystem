@@ -3,11 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.scense.ScenicSpotFragment">
+    tools:context=".ui.scense.SenseSpotFragment">
 
-   <com.imorning.tns.webview.X5WebView
-       android:id="@+id/scenic_webview"
-       android:layout_height="match_parent"
-       android:layout_width="match_parent"/>
 
 </FrameLayout>
