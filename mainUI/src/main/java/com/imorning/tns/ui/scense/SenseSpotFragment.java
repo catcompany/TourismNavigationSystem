@@ -136,6 +136,7 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
         moreinfo_button.setOnClickListener(this);
         targetLocation = new LocationInfo(marker.getPosition().latitude, marker.getPosition().longitude, null);
         name = marker.getTitle();
+        //如果点击的我的位置，则不显示 景点信息 按钮
         if (name.equals(getString(R.string.my_location))) {
             moreinfo_button.setVisibility(View.GONE);
         } else {
