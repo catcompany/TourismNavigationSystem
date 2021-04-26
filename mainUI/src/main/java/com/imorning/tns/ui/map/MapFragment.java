@@ -81,6 +81,8 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
 
     public View rootView;
     public View goRootView;
+    //目标地点信息
+    protected LocationInfo targetLocation = null;
     private MapViewModel mViewModel;
     // 要输入的poi搜索关键字
     private String mKeyWords = "";
@@ -94,8 +96,6 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     private PoiSearch poiSearch;
     private TextView mKeywordsTextView;
     private ImageView mCleanKeyWords;
-    //目标地点信息
-    protected LocationInfo targetLocation = null;
 
     public static MapFragment newInstance() {
         return new MapFragment();
@@ -323,17 +323,17 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
             //点击导航（去这儿）按钮
             case R.id.poi_keyword_uri_go:
                 if (currentLocationInfo == null) {
-                    ToastUtil.show(getContext(), "起点信息错误");
+                    ToastUtil.show(getContext(), getString(R.string.error_start));
                     break;
                 }
                 if (targetLocation == null) {
-                    ToastUtil.show(getContext(), "目标地点信息错误");
+                    ToastUtil.show(getContext(), getString(R.string.error_traget_location));
                     break;
                 }
                 LatLng startLatLng = new LatLng(currentLocationInfo.getLatitudel(), currentLocationInfo.getLongitude());
                 LatLng endLatLng = new LatLng(targetLocation.getLatitudel(), targetLocation.getLongitude());
                 if (startLatLng.equals(endLatLng)) {
-                    ToastUtil.show(getContext(), "起点和终点不能相同！");
+                    ToastUtil.show(getContext(), getString(R.string.start_is_target));
                     break;
                 }
                 List<Poi> wayList = null; //必须经过的点

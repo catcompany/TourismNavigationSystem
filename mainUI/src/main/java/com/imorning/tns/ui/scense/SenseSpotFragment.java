@@ -187,23 +187,23 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            //点击导航（去这儿）按钮
             case R.id.poi_keyword_uri_go:
                 if (currentLocationInfo == null) {
-                    ToastUtil.show(getContext(), "起点信息错误");
+                    ToastUtil.show(getContext(), getString(R.string.error_start));
                     break;
                 }
                 if (targetLocation == null) {
-                    ToastUtil.show(getContext(), "目标地点信息错误");
+                    ToastUtil.show(getContext(), getString(R.string.error_traget_location));
                     break;
                 }
                 LatLng startLatLng = new LatLng(currentLocationInfo.getLatitudel(), currentLocationInfo.getLongitude());
                 LatLng endLatLng = new LatLng(targetLocation.getLatitudel(), targetLocation.getLongitude());
                 if (startLatLng.equals(endLatLng)) {
-                    ToastUtil.show(getContext(), "起点和终点不能相同！");
+                    ToastUtil.show(getContext(), getString(R.string.start_is_target));
                     break;
                 }
-                List<Poi> wayList = null; //必须经过的点
+                //必须经过的点
+                List<Poi> wayList = null;
                 AmapNaviParams params = new AmapNaviParams(new Poi(currentLocationInfo.getCity(), startLatLng, ""), wayList,
                         new Poi("", endLatLng, ""), AmapNaviType.DRIVER);
                 params.setUseInnerVoice(true);
