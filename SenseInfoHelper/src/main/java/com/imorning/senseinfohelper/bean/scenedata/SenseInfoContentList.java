@@ -8,9 +8,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Auto-generated: 2021-04-24 16:59:43
+ * 存储景点信息
  *
  * @author iMorning
+ * <p>
+ * <a href="https://www.showapi.com/apiGateway/view/268">API详解</a>
  */
 public class SenseInfoContentList implements Serializable {
 

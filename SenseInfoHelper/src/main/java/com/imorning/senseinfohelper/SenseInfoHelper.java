@@ -15,6 +15,11 @@ import com.imorning.senseinfohelper.utils.StringUtils;
 
 import java.util.Map;
 
+/**
+ * 获取周边景点的API接口帮助类
+ *
+ * @author iMorning
+ */
 public class SenseInfoHelper {
     private static String API_ID = "609727";
     private static String API_KEY = "6fa5927d7edb46b0a3226bbf32d25577";

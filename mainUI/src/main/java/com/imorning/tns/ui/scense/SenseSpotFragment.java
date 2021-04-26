@@ -40,6 +40,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 显示周边的景点
+ */
 public class SenseSpotFragment extends MapFragment implements AMapLocationListener, OnClickListener {
     private static final String TAG = "SenseSpotFragment";
     private static final String KEYWORD = "keyword";
@@ -47,22 +50,37 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
     private static final String CITYID = "cityId";
     private static final String AREAID = "reaId";
     protected Handler mHandler = new Handler();
+    //定义两个变量，用于存储地点的经纬度
     private double lat, lng;
+    //周边景点API接口帮助类对象
     private SenseInfoHelper senseInfoHelper;
+    //存储景点信息列表
     private List<SenseInfoContentList> contents;
     private JSONObject jsonObject;
+    //某个景点的详细信息
     private SenseResBody senseResBody;
+    //景点名字
     private String name;
+    //周边景点列表
     private Map<String, SenseInfoContentList> pointInfo;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //设置搜索框不可见
         searchLayout.setVisibility(View.GONE);
         senseInfoHelper = new SenseInfoHelper();
         pointInfo = new HashMap<>();
     }
 
+    /**
+     * 开始搜索周边景点
+     *
+     * @param keyword  关键字
+     * @param province 省份
+     * @param city     市
+     * @param area     区域，一般为{@link null}
+     */
     private void startShowSense(String keyword, String province, String city, String area) {
         Map<String, String> map = new HashMap<>();
         if (keyword != null)
@@ -74,8 +92,9 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
                 map.put(CITYID, senseInfoHelper.getCityId(proId, city.replaceAll("市", "")));
             }
         }
+
+        //在新线程中发送网络请求
         new Thread() {
-            //在新线程中发送网络请求
             public void run() {
                 //获取附近景点信息
                 String data = senseInfoHelper.getSceneInfomation(map);
@@ -84,6 +103,7 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
                     public void run() {
                         jsonObject = JSON.parseObject(data);
                         senseResBody = jsonObject.getObject(Constants.SHOWAPI_RES_BODY, SenseResBody.class);
+                        //如果返回码不是0，代表请求失败
                         if (senseResBody.getRet_code() != 0) {
                             return;
                         }
@@ -96,7 +116,7 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
                             pointInfo.put(content.getName(), content);
                             lat = Double.parseDouble(content.getLocation().getLat());
                             lng = Double.parseDouble(content.getLocation().getLon());
-                            addSceneMark(new LatLng(lat, lng), content.getName(), content);
+                            addSceneMark(new LatLng(lat, lng), content.getName());
                         }
                     }
                 });
@@ -109,10 +129,9 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
      *
      * @param location 经纬度
      * @param title    标题
-     * @param content  类
      */
 
-    public void addSceneMark(LatLng location, String title, SenseInfoContentList content) {
+    public void addSceneMark(LatLng location, String title) {
         MarkerOptions markerOption = new MarkerOptions();
         markerOption.position(location);
         markerOption.title(title);

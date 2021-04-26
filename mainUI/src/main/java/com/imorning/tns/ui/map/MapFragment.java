@@ -55,6 +55,11 @@ import com.imorning.tns.utils.ToastUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author iMorning
+ * <p>
+ * 地图界面
+ */
 public class MapFragment extends Fragment implements AMap.OnMarkerClickListener, AMap.InfoWindowAdapter,
         PoiSearch.OnPoiSearchListener, View.OnClickListener,
         AMapLocationListener, LocationSource {
@@ -64,6 +69,8 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     public static final int RESULT_CODE_KEYWORDS = 102;
     public static final String CURRENT_CITY = "CURRENT_CITY";
     private static final String TAG = "MapFragment";
+    //导航方式,默认是驾车
+    private final AmapNaviType naviType = AmapNaviType.DRIVER;
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     //声明AMapLocationClientOption对象
@@ -78,7 +85,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     //地图视图
     public MapView mapView;
     public AMap mAMap;
-
+    //界面的根视图，最外层的视图
     public View rootView;
     public View goRootView;
     //目标地点信息
@@ -94,12 +101,15 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     private PoiSearch.Query query;
     // POI搜索
     private PoiSearch poiSearch;
+
     private TextView mKeywordsTextView;
+    //搜索框中的清除键
     private ImageView mCleanKeyWords;
 
     public static MapFragment newInstance() {
         return new MapFragment();
     }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -116,12 +126,13 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
         initMapSDK();
         initMapView(savedInstanceState);
         init();
-
     }
 
 
     /**
      * 开始进行poi搜索
+     *
+     * @param keywords 关键字
      */
     public void doSearchQuery(String keywords) {
         showProgressDialog();
@@ -135,9 +146,16 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
 
         poiSearch = new PoiSearch(getContext(), query);
         poiSearch.setOnPoiSearchListener(this);
+        //异步搜索POI
         poiSearch.searchPOIAsyn();
     }
 
+    /**
+     * 当标记点被点击时
+     *
+     * @param marker 被点击的标记点，是一个{@link Marker}
+     * @return ...
+     */
     @Override
     public boolean onMarkerClick(Marker marker) {
         marker.showInfoWindow();
@@ -174,6 +192,8 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
 
     /**
      * poi没有搜索到数据，返回一些推荐城市的信息
+     *
+     * @param cities 推荐的城市列表
      */
     private void showSuggestCity(List<SuggestionCity> cities) {
         StringBuilder infomation = new StringBuilder("推荐城市\n");
@@ -181,7 +201,6 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
             infomation.append("城市名称:").append(cities.get(i).getCityName()).append("城市区号:").append(cities.get(i).getCityCode()).append("城市编码:").append(cities.get(i).getAdCode()).append("\n");
         }
         ToastUtil.show(getContext(), infomation.toString());
-
     }
 
 
@@ -191,6 +210,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     @Override
     public void onPoiSearched(PoiResult result, int rCode) {
         dissmissProgressDialog();
+        //rCode为1000代表请求正常
         if (rCode == 1000) {
             if (result != null && result.getQuery() != null) {
                 // 搜索poi的结果
@@ -200,7 +220,6 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
                     // 取得搜索到的poiitems有多少页
                     ArrayList<PoiItem> poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
                     List<SuggestionCity> suggestionCities = poiResult.getSearchSuggestionCitys();// 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
-
                     if (poiItems != null && poiItems.size() > 0) {
                         // 清理之前的图标
                         mAMap.clear();
@@ -295,9 +314,12 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
      */
     public void addMapMark(LatLng location) {
         MarkerOptions markerOption = new MarkerOptions();
+        //标记点位置
         markerOption.position(location);
+        //标记点标题
         markerOption.title(getString(R.string.my_location));
         markerOption.draggable(false);
+        //标记点图标
         markerOption.icon(BitmapDescriptorFactory.fromBitmap(
                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_location)));
         mAMap.addMarker(markerOption);
@@ -305,6 +327,8 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
 
     /**
      * 点击事件回调方法
+     *
+     * @param v 被点击的视图
      */
     @SuppressLint("NonConstantResourceId")
     @Override
@@ -315,6 +339,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
                 intent.putExtra(CURRENT_CITY, currentLocationInfo.getCity());
                 startActivityForResult(intent, REQUEST_CODE);
                 break;
+            //点击了清除按钮
             case R.id.clean_keywords:
                 mKeywordsTextView.setText("");
                 mAMap.clear();
@@ -322,23 +347,27 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
                 break;
             //点击导航（去这儿）按钮
             case R.id.poi_keyword_uri_go:
+                //如果当前的位置信息为空
                 if (currentLocationInfo == null) {
                     ToastUtil.show(getContext(), getString(R.string.error_start));
                     break;
                 }
+                //如果目标地点信息为空
                 if (targetLocation == null) {
                     ToastUtil.show(getContext(), getString(R.string.error_traget_location));
                     break;
                 }
                 LatLng startLatLng = new LatLng(currentLocationInfo.getLatitudel(), currentLocationInfo.getLongitude());
                 LatLng endLatLng = new LatLng(targetLocation.getLatitudel(), targetLocation.getLongitude());
+                //出发地点和目标地点相同
                 if (startLatLng.equals(endLatLng)) {
                     ToastUtil.show(getContext(), getString(R.string.start_is_target));
                     break;
                 }
-                List<Poi> wayList = null; //必须经过的点
+                //必须经过的点
+                List<Poi> wayList = null;
                 AmapNaviParams params = new AmapNaviParams(new Poi(currentLocationInfo.getCity(), startLatLng, ""), wayList,
-                        new Poi("", endLatLng, ""), AmapNaviType.DRIVER);
+                        new Poi("", endLatLng, ""), naviType);
                 params.setUseInnerVoice(true);
                 AmapNaviPage amapNaviPage = AmapNaviPage.getInstance();
                 amapNaviPage.showRouteActivity(getContext(), params, new NaviInfoCallback(getContext()));

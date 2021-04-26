@@ -5,9 +5,8 @@ package com.imorning.senseinfohelper.bean.scenedata;
 
 
 /**
- * Auto-generated: 2021-04-24 16:59:43
- *
  * @author iMorning
+ *
  */
 public class SenseResBody {
 

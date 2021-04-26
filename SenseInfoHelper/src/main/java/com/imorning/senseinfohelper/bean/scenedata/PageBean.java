@@ -27,6 +27,11 @@ public class PageBean {
         this.allPages = allPages;
     }
 
+    /**
+     * 获取景点信息
+     *
+     * @return {@link SenseInfoContentList}
+     */
     public List<SenseInfoContentList> getContentList() {
         return contentlist;
     }
