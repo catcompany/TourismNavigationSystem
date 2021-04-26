@@ -134,9 +134,13 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
         title.setText(marker.getTitle());
         go_button.setOnClickListener(this);
         moreinfo_button.setOnClickListener(this);
-        moreinfo_button.setVisibility(View.VISIBLE);
         targetLocation = new LocationInfo(marker.getPosition().latitude, marker.getPosition().longitude, null);
         name = marker.getTitle();
+        if (name.equals(getString(R.string.my_location))) {
+            moreinfo_button.setVisibility(View.GONE);
+        } else {
+            moreinfo_button.setVisibility(View.VISIBLE);
+        }
         return goRootView;
     }
 
