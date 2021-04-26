@@ -3,6 +3,7 @@ package com.imorning.senseinfohelper;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.imorning.senseinfohelper.bean.scenedata.PicList;
 import com.imorning.senseinfohelper.bean.scenedata.Price;
 import com.imorning.senseinfohelper.bean.scenedata.PriceBean;
 import com.imorning.senseinfohelper.bean.scenedata.SenseInfoContentList;
@@ -56,11 +57,13 @@ public class Main {
             if (content.getLocation() != null) {
                 System.out.println("经纬度:" + content.getLocation().toString());
             }
-            if (content.getPriceList() != null) {
+            if (content.getPriceList().size() > 0) {
                 System.out.println("图片列表：");
-                for (String picUrl : content.getPicList()) {
+                for (PicList picUrl : content.getPicList()) {
                     System.out.println(picUrl);
                 }
+            } else {
+                System.out.println("没得图片");
             }
         }
     }

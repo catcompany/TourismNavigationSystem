@@ -3,12 +3,17 @@
  */
 package com.imorning.senseinfohelper.bean.scenedata;
 
+import android.os.Parcel;
+
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author iMorning
  */
-public class Price {
+public class Price implements Serializable {
+
+    private static final long serialVersionUID = -3409450024256229918L;
     /**
      * 门票名称
      */
@@ -27,6 +32,11 @@ public class Price {
     private long TicketTypeId;
     private long PriceId;
     private int PriceInSceneryId;
+
+    public Price() {
+
+    }
+
 
     public String getTicketName() {
         return TicketName;

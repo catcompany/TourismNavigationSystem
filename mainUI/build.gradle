@@ -14,7 +14,7 @@ android {
         versionName "1.0"
 
         ndk {
-            abiFilters "arm64-v8a"
+            abiFilters "arm64-v8a", 'armeabi', 'armeabi-v7a'
         }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -29,6 +29,10 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    viewBinding {
+        enabled = true
     }
 }
 
@@ -58,10 +62,9 @@ dependencies {
     //和景区功能相关的API
     implementation project(path: ':SenseInfoHelper')
     //JSON解析
-    // https://mvnrepository.com/artifact/com.alibaba/fastjson
     implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.76'
-    // https://mvnrepository.com/artifact/org.json/json
-    implementation group: 'org.json', name: 'json', version: '20210307'
+    //图片异步加载库
+    implementation 'com.android.volley:volley:1.1.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

@@ -41,8 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import kotlin.collections.MapsKt;
-
 public class SenseSpotFragment extends MapFragment implements AMapLocationListener, OnClickListener {
     private static final String TAG = "SenseSpotFragment";
     private static final String KEYWORD = "keyword";
@@ -56,12 +54,14 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
     private JSONObject jsonObject;
     private SenseResBody senseResBody;
     private String name;
+    private Map<String, SenseInfoContentList> pointInfo;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         searchLayout.setVisibility(View.GONE);
         senseInfoHelper = new SenseInfoHelper();
+        pointInfo = new HashMap<>();
     }
 
     private void startShowSense(String keyword, String province, String city, String area) {
@@ -88,9 +88,13 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
                         if (senseResBody.getRet_code() != 0) {
                             return;
                         }
+                        if (pointInfo.size() > 0) {
+                            pointInfo.clear();
+                        }
                         contents = senseResBody.getPagebean().getContentList();
                         if (contents == null) return;
                         for (SenseInfoContentList content : contents) {
+                            pointInfo.put(content.getName(), content);
                             lat = Double.parseDouble(content.getLocation().getLat());
                             lng = Double.parseDouble(content.getLocation().getLon());
                             addSceneMark(new LatLng(lat, lng), content.getName(), content);
@@ -204,8 +208,7 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
                 break;
             case R.id.poi_keyword_more:
                 Intent intent = new Intent(requireContext(), SenseInfoActivity.class);
-                intent.putExtra(SenseInfoActivity.SCENE_NAME, name);
-                intent.putExtra(SenseInfoActivity.CITY,targetLocation.getCity());
+                intent.putExtra(SenseInfoActivity.DATA_KEY, pointInfo.get(name));
                 startActivity(intent);
                 break;
             default:

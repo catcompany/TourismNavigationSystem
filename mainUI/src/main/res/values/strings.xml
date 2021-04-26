@@ -21,4 +21,11 @@
     <string name="my_location">我在这</string>
     <string name="loading">加载中</string>
     <string name="more_information">详细信息</string>
+    <string name="sense_name">景点名称</string>
+    <string name="open_time">开放时间</string>
+    <string name="coupon">优惠政策</string>
+    <string name="introduction">景点介绍</string>
+    <string name="tips">温馨提示</string>
+    <string name="null_text">暂无</string>
+    <string name="price_introduction">价格说明</string>
 </resources>

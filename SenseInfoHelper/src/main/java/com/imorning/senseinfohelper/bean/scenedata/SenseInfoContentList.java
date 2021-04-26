@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class SenseInfoContentList implements Serializable {
 
+
+    private static final long serialVersionUID = 3303852908997390800L;
     /**
      * 省级id
      */
@@ -81,7 +83,13 @@ public class SenseInfoContentList implements Serializable {
     /**
      * 图片列表
      */
-    private List<String> picList;
+    private List<PicList> picList;
+
+    public SenseInfoContentList() {
+        super();
+
+    }
+
 
     public String getProId() {
         return proId;
@@ -211,11 +219,11 @@ public class SenseInfoContentList implements Serializable {
         this.coupon = coupon;
     }
 
-    public List<String> getPicList() {
+    public List<PicList> getPicList() {
         return picList;
     }
 
-    public void setPicList(List<String> picList) {
+    public void setPicList(List<PicList> picList) {
         this.picList = picList;
     }
 

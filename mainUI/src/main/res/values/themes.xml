@@ -32,4 +32,18 @@
     <style name="Theme.TourismNavigationSystem.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.TourismNavigationSystem.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="TextTitle" parent="TextAppearance.AppCompat.Title">
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="TextContent" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:paddingLeft">2dp</item>
+        <item name="android:paddingRight">2dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>

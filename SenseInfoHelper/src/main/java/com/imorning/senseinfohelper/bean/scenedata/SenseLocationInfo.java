@@ -3,13 +3,16 @@
  */
 package com.imorning.senseinfohelper.bean.scenedata;
 
+import java.io.Serializable;
+
 /**
  * 景点的位置信息
  *
  * @author iMorning
  */
-public class SenseLocationInfo {
+public class SenseLocationInfo implements Serializable {
 
+    private static final long serialVersionUID = 973996466037013850L;
     private String lon;
     private String lat;
 

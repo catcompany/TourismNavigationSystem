@@ -48,25 +48,6 @@ public class NormalRequest {
         this.addHeadPara("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2427.7 Safari/537.36");
     }
 
-    //把文件转为base64字符串,因为normalRequest中没有无参的构造函数,不能直接调用 ,所以把这个方法做成了静态方法
-    public static String fileToBase64(File file) {
-        byte[] buffer = null;
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] b = new byte[1024];
-            int n;
-            while ((n = fis.read(b)) != -1) {
-                bos.write(b, 0, n);
-            }
-            fis.close();
-            bos.close();
-            buffer = bos.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return javax.xml.bind.DatatypeConverter.printBase64Binary(buffer);
-    }
 
     public boolean isAllowRedirect() {
         return allowRedirect;
@@ -240,27 +221,9 @@ public class NormalRequest {
         return this;
     }
 
-    /**
-     * 添加base64字符串参数，使用传入文件内容
-     *
-     * @param key      参数名
-     * @param filePath 文件路径
-     * @return NormalRequest
-     */
-    public NormalRequest addBase64Para(String key, String filePath) {
-        return addBase64Para(key, new File(filePath));
-    }
 
-    /**
-     * 添加base64字符串参数，使用传入文件内容
-     *
-     * @param key  参数名
-     * @param file 文件对象
-     * @return NormalRequest
-     */
-    public NormalRequest addBase64Para(String key, File file) {
-        return addTextPara(key, fileToBase64(file));
-    }
+
+
 
     /**
      * @param heads : Accept-Encoding: gzip, deflate\r\nHost: www.qichacha.com\r\n
