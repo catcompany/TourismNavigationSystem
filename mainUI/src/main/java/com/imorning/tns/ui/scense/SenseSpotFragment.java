@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -177,8 +176,8 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
                             aMapLocation.getCountry());
                 }
             } else {
-                //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
-                Log.e(TAG, "onLocationChanged: location Error, ErrCode:" + aMapLocation.getErrorCode()
+                //定位失败
+                ToastUtil.show(getContext(), "onLocationChanged: location Error, ErrCode:" + aMapLocation.getErrorCode()
                         + ", errInfo:" + aMapLocation.getErrorInfo());
             }
         }
