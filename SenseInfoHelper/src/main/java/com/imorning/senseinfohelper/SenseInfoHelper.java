@@ -1,5 +1,9 @@
 package com.imorning.senseinfohelper;
 
+import android.annotation.TargetApi;
+import android.content.pm.PackageManager;
+import android.os.Process;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.imorning.senseinfohelper.bean.citydata.area.AreaList;
@@ -11,8 +15,10 @@ import com.imorning.senseinfohelper.bean.citydata.province.ProvinceResBody;
 import com.imorning.senseinfohelper.utils.APIInterface;
 import com.imorning.senseinfohelper.utils.Constants;
 import com.imorning.senseinfohelper.utils.HttpUtils;
+import com.imorning.senseinfohelper.utils.JniUtils;
 import com.imorning.senseinfohelper.utils.StringUtils;
 
+import java.lang.annotation.Target;
 import java.util.Map;
 
 /**
@@ -20,9 +26,9 @@ import java.util.Map;
  *
  * @author iMorning
  */
-public class SenseInfoHelper {
-    private static String API_ID = "609727";
-    private static String API_KEY = "6fa5927d7edb46b0a3226bbf32d25577";
+public class SenseInfoHelper extends JniUtils {
+    private static String API_KEY = getKey(BuildConfig.LIBRARY_PACKAGE_NAME);
+    private static String API_ID = getApiId(API_KEY);
     private static APIInterface apiInterface;
 
     public SenseInfoHelper(String API_ID, String API_KEY) {

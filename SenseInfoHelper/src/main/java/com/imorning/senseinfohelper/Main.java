@@ -19,8 +19,6 @@ import java.util.Map;
 public class Main {
     private static final String filePath = "G:\\Projects\\AndroidStudioProjects\\TourismNavigationSystem\\SenseInfoHelper\\test_data.json";
     private static final String keyword = "白塔山";
-    private final String API_ID = "609727";
-    private final String API_KEY = "6fa5927d7edb46b0a3226bbf32d25577";
 
     public static void main(String[] args) {
         SenseInfoHelper senseInfoHelper = new SenseInfoHelper();
