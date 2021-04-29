@@ -100,7 +100,7 @@ public class X5WebView extends WebView {
             loadingDialog = new AppCompatDialog(context);
         @SuppressLint("InflateParams")
         View view = LayoutInflater.from(context).inflate(R.layout.web_loading_layout, null);
-        ((SlackLoadingView) findViewById(R.id.web_loading_view)).start();
+        ((SlackLoadingView) view.findViewById(R.id.web_loading_view)).start();
         loadingDialog.setContentView(view);
         loadingDialog.setCancelable(false);
         loadingDialog.create();
