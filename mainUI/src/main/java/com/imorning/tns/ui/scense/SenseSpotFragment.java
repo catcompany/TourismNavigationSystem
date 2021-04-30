@@ -207,27 +207,7 @@ public class SenseSpotFragment extends MapFragment implements AMapLocationListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.poi_keyword_uri_go:
-                if (currentLocationInfo == null) {
-                    ToastUtil.show(getContext(), getString(R.string.error_start));
-                    break;
-                }
-                if (targetLocation == null) {
-                    ToastUtil.show(getContext(), getString(R.string.error_traget_location));
-                    break;
-                }
-                LatLng startLatLng = new LatLng(currentLocationInfo.getLatitudel(), currentLocationInfo.getLongitude());
-                LatLng endLatLng = new LatLng(targetLocation.getLatitudel(), targetLocation.getLongitude());
-                if (startLatLng.equals(endLatLng)) {
-                    ToastUtil.show(getContext(), getString(R.string.start_is_target));
-                    break;
-                }
-                //必须经过的点
-                List<Poi> wayList = null;
-                AmapNaviParams params = new AmapNaviParams(new Poi(currentLocationInfo.getCity(), startLatLng, ""), wayList,
-                        new Poi("", endLatLng, ""), AmapNaviType.DRIVER);
-                params.setUseInnerVoice(true);
-                AmapNaviPage amapNaviPage = AmapNaviPage.getInstance();
-                amapNaviPage.showRouteActivity(getContext(), params, new NaviInfoCallback(getContext()));
+                startNavi(currentLocationInfo, targetLocation, null);
                 break;
             case R.id.poi_keyword_more:
                 Intent intent = new Intent(requireContext(), SenseInfoActivity.class);

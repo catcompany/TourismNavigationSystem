@@ -2,20 +2,27 @@ package com.imorning.tns.ui.map;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
@@ -51,6 +58,12 @@ import com.imorning.tns.utils.Constants;
 import com.imorning.tns.utils.LocationInfo;
 import com.imorning.tns.utils.NaviInfoCallback;
 import com.imorning.tns.utils.ToastUtil;
+import com.mylhyl.circledialog.CircleDialog;
+import com.mylhyl.circledialog.callback.ConfigButton;
+import com.mylhyl.circledialog.callback.ConfigDialog;
+import com.mylhyl.circledialog.params.ButtonParams;
+import com.mylhyl.circledialog.params.DialogParams;
+import com.mylhyl.circledialog.view.listener.OnLvItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,26 +81,27 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
     public static final int RESULT_CODE_INPUTTIPS = 101;
     public static final int RESULT_CODE_KEYWORDS = 102;
     public static final String CURRENT_CITY = "CURRENT_CITY";
+
     private static final String TAG = "MapFragment";
-    //导航方式,默认是驾车
-    private final AmapNaviType naviType = AmapNaviType.DRIVER;
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
+    //导航方式,默认是驾车
+    protected AmapNaviType naviType = AmapNaviType.DRIVER;
     //声明AMapLocationClientOption对象
-    public AMapLocationClientOption mLocationOption = null;
-    public RelativeLayout searchLayout;
+    protected AMapLocationClientOption mLocationOption = null;
+    protected RelativeLayout searchLayout;
     //保存位置信息
-    public LocationInfo currentLocationInfo = null;
+    protected LocationInfo currentLocationInfo = null;
     //标识，用于判断是否只显示一次定位信息和用户重新定位
-    public boolean isFirstLoc = true;
+    protected boolean isFirstLoc = true;
     //位置监听，当定位发生改变的时候调用
-    public OnLocationChangedListener locationChangedListener;
+    protected OnLocationChangedListener locationChangedListener;
     //地图视图
-    public MapView mapView;
-    public AMap mAMap;
+    protected MapView mapView;
+    protected AMap mAMap;
     //界面的根视图，最外层的视图
-    public View rootView;
-    public View goRootView;
+    protected View rootView;
+    protected View goRootView;
     //目标地点信息
     protected LocationInfo targetLocation = null;
     private MapViewModel mViewModel;
@@ -347,34 +361,71 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
                 break;
             //点击导航（去这儿）按钮
             case R.id.poi_keyword_uri_go:
-                //如果当前的位置信息为空
-                if (currentLocationInfo == null) {
-                    ToastUtil.show(getContext(), getString(R.string.error_start));
-                    break;
-                }
-                //如果目标地点信息为空
-                if (targetLocation == null) {
-                    ToastUtil.show(getContext(), getString(R.string.error_traget_location));
-                    break;
-                }
-                LatLng startLatLng = new LatLng(currentLocationInfo.getLatitudel(), currentLocationInfo.getLongitude());
-                LatLng endLatLng = new LatLng(targetLocation.getLatitudel(), targetLocation.getLongitude());
-                //出发地点和目标地点相同
-                if (startLatLng.equals(endLatLng)) {
-                    ToastUtil.show(getContext(), getString(R.string.start_is_target));
-                    break;
-                }
-                //必须经过的点
-                List<Poi> wayList = null;
-                AmapNaviParams params = new AmapNaviParams(new Poi(currentLocationInfo.getCity(), startLatLng, ""), wayList,
-                        new Poi("", endLatLng, ""), naviType);
-                params.setUseInnerVoice(true);
-                AmapNaviPage amapNaviPage = AmapNaviPage.getInstance();
-                amapNaviPage.showRouteActivity(getContext(), params, new NaviInfoCallback(getContext()));
+                startNavi(currentLocationInfo, targetLocation, null);
                 break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 启动导航界面
+     *
+     * @param startLocation 起始点
+     * @param endLocation   目标地
+     * @param wayList       一些想要经过的点 {@link List<Poi>}
+     */
+    protected void startNavi(LocationInfo startLocation, LocationInfo endLocation, List<Poi> wayList) {
+        if (startLocation == null) {
+            ToastUtil.show(getContext(), getString(R.string.error_start));
+            return;
+        }
+        if (endLocation == null) {
+            ToastUtil.show(getContext(), getString(R.string.error_traget_location));
+            return;
+        }
+        LatLng startLatLng = new LatLng(currentLocationInfo.getLatitudel(), currentLocationInfo.getLongitude());
+        LatLng endLatLng = new LatLng(targetLocation.getLatitudel(), targetLocation.getLongitude());
+        if (startLatLng.equals(endLatLng)) {
+            ToastUtil.show(getContext(), getString(R.string.start_is_target));
+            return;
+        }
+        final String[] items = {"驾车", "步行", "骑行"};
+        new CircleDialog.Builder()
+                .configDialog(params -> {
+                    //增加弹出动画
+                    params.animStyle = R.style.dialogWindowAnim;
+                })
+                .setTitle("选择出行方式")
+                .setTitleColor(Color.BLUE)
+                .setItems(items, (parent, view, position, id) -> {
+                    switch (position) {
+                        case 0:
+                            naviType = AmapNaviType.DRIVER;
+                            break;
+                        case 1:
+                            naviType = AmapNaviType.WALK;
+                            break;
+                        case 2:
+                            naviType = AmapNaviType.RIDE;
+                            break;
+                        default:
+                            naviType = AmapNaviType.DRIVER;
+                            break;
+                    }
+                    AmapNaviParams params = new AmapNaviParams(new Poi(currentLocationInfo.getCity(), startLatLng, ""), wayList,
+                            new Poi("", endLatLng, ""), naviType);
+                    params.setUseInnerVoice(true);
+                    AmapNaviPage amapNaviPage = AmapNaviPage.getInstance();
+                    amapNaviPage.showRouteActivity(getContext(), params, new NaviInfoCallback(getContext()));
+                    return true;
+                })
+                .setNegative(getString(android.R.string.cancel), null)
+                .configNegative(params -> {
+                    //取消按钮字体颜色
+                    params.textColor = Color.RED;
+                })
+                .show(getParentFragmentManager());
     }
 
     /**
@@ -488,6 +539,7 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
         }
     }
 
+
     @Override
     public void activate(OnLocationChangedListener onLocationChangedListener) {
         locationChangedListener = onLocationChangedListener;
@@ -547,5 +599,22 @@ public class MapFragment extends Fragment implements AMap.OnMarkerClickListener,
         if (progDialog != null) {
             progDialog.dismiss();
         }
+    }
+
+    public void showNaviTypeChooser() {
+        //创建item
+        final String[] items3 = new String[]{"条目1", "条目2", "条目3", "条目4", "条目5", "条目6", "条目7", "条目8"};
+        AlertDialog alertDialog3 = new AlertDialog.Builder(requireContext())
+                .setTitle("选项标题")
+                .setIcon(R.mipmap.ic_launcher)
+                .setItems(items3, new DialogInterface.OnClickListener() { //添加列表
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(requireContext(), "点的是：" + items3[i], Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .create();
+        alertDialog3.show();
+
     }
 }
