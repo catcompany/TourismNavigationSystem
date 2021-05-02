@@ -14,17 +14,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialog;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.imorning.tns.R;
 import com.imorning.tns.ui.SlackLoadingView;
 import com.mylhyl.circledialog.CircleDialog;
+import com.tencent.smtt.export.external.interfaces.WebResourceError;
+import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
 import com.tencent.smtt.sdk.ValueCallback;
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
@@ -39,6 +43,7 @@ public class BBSFragment extends Fragment {
     private final static String bbsUrl = "https://bbs.catcompany.cn/";
     private ValueCallback<Uri[]> uploadMessageAboveL;
     private ValueCallback<Uri> uploadMessage;
+
     private WebView webView;
     private OnBackPressedCallback callback;
     //加载动画框
@@ -64,6 +69,7 @@ public class BBSFragment extends Fragment {
             super.onPageFinished(webView, s);
             hideLoadingDialog();
         }
+
     };
 
     public static BBSFragment newInstance() {
@@ -93,8 +99,30 @@ public class BBSFragment extends Fragment {
             @Override
             public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> valueCallback, FileChooserParams fileChooserParams) {
                 uploadMessageAboveL = valueCallback;
-                openImageChooserActivity();
+                BBSFragment.this.openFileChooser();
                 return true;
+            }
+
+            /**
+             * 加载进度发生改变时触发
+             * @param webView ...
+             * @param i 进度，值从0~100
+             */
+            @Override
+            public void onProgressChanged(WebView view, int i) {
+                super.onProgressChanged(view, i);
+                if (i > 50) hideLoadingDialog();
+            }
+
+            /**
+             * 当webview接收到标题的时候触发
+             * @param webView ..
+             * @param title 标题
+             */
+            @Override
+            public void onReceivedTitle(WebView webView, String title) {
+                super.onReceivedTitle(webView, title);
+
             }
         });
         WebSettings webSetting = webView.getSettings();
@@ -109,15 +137,23 @@ public class BBSFragment extends Fragment {
         // settings 的设计
     }
 
-
-    private void openImageChooserActivity() {
+    /**
+     * 选择文件上传
+     */
+    private void openFileChooser() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.addCategory(Intent.CATEGORY_OPENABLE);
         i.setType("*/*");
         startActivityForResult(Intent.createChooser(i, "文件选择"), FILE_CHOOSER_RESULT_CODE);
     }
 
-
+    /**
+     * 回调处理
+     *
+     * @param requestCode ..
+     * @param resultCode  ..
+     * @param data        数据
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -212,12 +248,7 @@ public class BBSFragment extends Fragment {
                 .setTitle("提示")
                 .setText("确定退出？")
                 .setNegative("取消", null)
-                .setPositive("确定", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        requireActivity().getOnBackPressedDispatcher().onBackPressed();
-                    }
-                })
+                .setPositive("确定", v -> requireActivity().getOnBackPressedDispatcher().onBackPressed())
                 .show(requireActivity().getSupportFragmentManager());
     }
 }
