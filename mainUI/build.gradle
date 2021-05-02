@@ -51,8 +51,6 @@ dependencies {
     implementation 'com.github.getActivity:XXPermissions:10.8'
     //对话框
     implementation 'com.mylhyl:circleDialog:5.3.7.1'
-    //加载动画
-    implementation 'com.github.JeasonWong:SlackLoadingView:c01bead61c'
     //定位功能
     implementation 'com.amap.api:location:latest.integration'
     //搜索功能

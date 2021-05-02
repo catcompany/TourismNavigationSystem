@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.bbs.BBSFragment">
 
-    <com.imorning.tns.webview.X5WebView
+    <com.tencent.smtt.sdk.WebView
         android:id="@+id/webview_bbs"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
