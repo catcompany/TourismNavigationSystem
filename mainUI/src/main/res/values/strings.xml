@@ -9,7 +9,7 @@
 
     <string name="menu_bbs">论坛</string>
     <string name="menu_map">地图</string>
-    <string name="menu_sense">附近景区搜索</string>
+    <string name="menu_sense">景区推荐</string>
 
     <string name="clear_all">清空</string>
     <string name="search_by_keywords">地点搜索</string>
