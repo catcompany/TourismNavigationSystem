@@ -4,7 +4,7 @@ import android.app.Application;
 import android.util.Log;
 
 import com.hjq.permissions.XXPermissions;
-import com.imorning.tns.utils.ApkUtils;
+import com.imorning.tns.utils.JniUtils;
 import com.tencent.smtt.export.external.TbsCoreSettings;
 import com.tencent.smtt.sdk.QbSdk;
 
@@ -25,7 +25,7 @@ public class App extends Application {
             }
         }).start();
         // TODO: 2021-04-24 获取SHA1，用完删除
-        Log.e(TAG, ApkUtils.getCertificateSHA1Fingerprint(this));
+        Log.d(TAG,new JniUtils().getAppSHA1(this));
     }
 
     /**

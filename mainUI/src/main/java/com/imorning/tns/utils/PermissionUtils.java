@@ -50,6 +50,6 @@ public class PermissionUtils {
     }
 
     private void toast(String msg) {
-        Toast.makeText(appCompatActivity.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+        ToastUtil.show(appCompatActivity.getApplicationContext(), msg);
     }
 }

@@ -18,6 +18,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
 import com.hjq.permissions.XXPermissions;
 import com.imorning.tns.R;
+import com.imorning.tns.utils.JniUtils;
 import com.imorning.tns.utils.PermissionUtils;
 
 
