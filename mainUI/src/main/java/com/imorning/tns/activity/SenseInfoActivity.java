@@ -64,7 +64,7 @@ public class SenseInfoActivity extends AppCompatActivity {
         //景点名称
         viewBinding.senseInfoName.setText(senseData.getName());
         //开放时间
-        viewBinding.senseInfoTime.setText(senseData.getOpentime());
+        viewBinding.senseInfoTime.setText(formatInfoTime(senseData.getOpentime()));
         //优惠政策
         viewBinding.senseInfoCoupon.setText(senseData.getCoupon());
         //注意事项
@@ -88,6 +88,18 @@ public class SenseInfoActivity extends AppCompatActivity {
         } else {
             viewBinding.senseInfoLayoutPrice.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * 处理时间中的乱码
+     *
+     * @param opentime 开放时间
+     * @return ...
+     */
+    private String formatInfoTime(String opentime) {
+        String time = opentime.trim();
+        time = time.replaceAll("&mdash;", "-");
+        return time;
     }
 
     /**
